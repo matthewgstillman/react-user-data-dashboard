@@ -1,5 +1,8 @@
-import "./App.css";
+import "./Styles/Style.css";
 import { useState, useEffect } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
+import Button from "react-bootstrap/Button";
+import Card from "react-bootstrap/Card";
 
 function App() {
   const [user, setUser] = useState("");
@@ -33,6 +36,15 @@ function App() {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
+  const formatPhoneNumber = (phoneNumber) => {
+    const cleaned = ("" + phoneNumber).replace(/\D/g, "");
+    const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+    if (match) {
+      return `(${match[1]}) ${match[2]}-${match[3]}`;
+    }
+    return phoneNumber;
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -42,37 +54,45 @@ function App() {
   }
 
   return (
-    <div>
+    <div className="mainCard" style={{ width: "100vw" }}>
       <h1>Random User</h1>
       {user && (
-        <div className="userCard">
-          <img src={user.picture.large} alt="" />
-          <h1 className="name">
-            {user.name.title} {user.name.first} {user.name.last}
-          </h1>
-          <div className="address">
-            <p className="addressLine1">
-              {user.location.street.number} {user.location.street.name}
-            </p>
-            <p className="addressLine2">
-              {user.location.city}, {user.location.state}{" "}
-              {user.location.postcode}
-            </p>
-            <p className="email">
-              Email: <a href={`mailto:${user.email}`}>{user.email}</a>
-            </p>
-            <p className="dateOfBirth">
-              Date of Birth: {formatDate(user.dob.date)}
-            </p>
-            <p className="phoneNumber">
-              Cell phone: <a href={`tel:${user.cell}`}>{user.cell}</a>
-            </p>
-            <p className="userLoginInfo">Username: {user.login.username}</p>
-          </div>
+        <div className="card">
+          <Card style={{ width: "30rem" }}>
+            <Card.Img variant="top" src={user.picture.large} />
+            <Card.Body>
+              <Card.Title>
+                {user.name.first} {user.name.last}
+              </Card.Title>
+              <Card.Text className="address">
+                {user.location.street.number} {user.location.street.name}
+                <br></br>
+                {user.location.city}, {user.location.state}{" "}
+                {user.location.postcode}
+                <br></br>
+                <Card.Link href={`tel:${user.cell}`}>{user.email}</Card.Link>
+                <br></br>
+                Mobile:
+                <Card.Link href={`mailto:${user.email}`}>
+                  {formatPhoneNumber(user.cell)}
+                </Card.Link>
+                <br></br>
+                Date of Birth: {formatDate(user.dob.date)}
+                <br></br>
+                Date Registered: {formatDate(user.registered.date)}
+              </Card.Text>
+            </Card.Body>
+          </Card>
         </div>
       )}
 
-      <button onClick={fetchUser}>Get New Random User</button>
+      <Button
+        onClick={fetchUser}
+        variant="primary"
+        className="randomUserButton"
+      >
+        Get New Random User
+      </Button>
     </div>
   );
 }
